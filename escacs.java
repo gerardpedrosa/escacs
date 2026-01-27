@@ -9,15 +9,21 @@ public class escacs {
     }
 
     Scanner sc = new Scanner(System.in);
+    boolean fiPartida = false;
 
     public void principal() {
         System.out.println("Benvingut al joc d'escacs!");
 
         char[][] tauler = new char[8][8];
 
-        ArrayList<String> moviments = new ArrayList<String>();
+        ArrayList<Character> moviments = new ArrayList<Character>();
+
+        ArrayList<Character> eliminadesB = new ArrayList<Character>();
+        ArrayList<Character> eliminadesN = new ArrayList<Character>();
 
         demanarJugadors();
+        prepararPartida(tauler, moviments);
+        jugar(tauler, moviments);
     }
 
     public void demanarJugadors() {
@@ -37,20 +43,29 @@ public class escacs {
 
     }
 
-    public void prepararPartida(char[][] tauler, ArrayList<String> moviments) {
+    public void prepararPartida(char[][] tauler, ArrayList<Character> moviments) {
         
+        char torn;
+
         inicialitzarTauler(tauler);
 
         netejarMoviments(tauler, moviments);
 
+        torn = 'B';
+
     }
 
     public void inicialitzarTauler(char[][] tauler) {
-        
-        posarBlanques(tauler);
-        posarNegres(tauler);
 
+    for (int f = 0; f < 8; f++) {
+        for (int c = 0; c < 8; c++) {
+            tauler[f][c] = ' ';
+        }
     }
+
+    posarBlanques(tauler);
+    posarNegres(tauler);
+}
 
     
     public void posarBlanques(char[][] tauler) {
@@ -86,4 +101,35 @@ public class escacs {
         tauler[7][4] = 'k';
 
     }
+
+    public void netejarMoviments(char[][] tauler, ArrayList<Character> moviments) {
+        moviments.clear();
+    }
+
+    public void jugar(char[][] tauler, ArrayList<Character> moviments) {
+        
+    
+    mostrarTauler(tauler);
+        
+    }
+    
+    public void mostrarTauler(char[][] tauler) {
+
+        System.out.println("    a b c d e f g h");
+
+        for (int f = 0; f < 8; f++) {
+            System.out.print((f + 1) + " | ");
+
+            for (int c = 0; c < 8; c++) {
+                char peça = tauler[f][c];
+                if (peça == ' ') {
+                    System.out.print(". ");
+                } else {
+                    System.out.print(peça + " ");
+                }
+            }
+            System.out.println();
+        }
+    }  
+
 }
