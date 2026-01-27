@@ -10,13 +10,14 @@ public class escacs {
 
     Scanner sc = new Scanner(System.in);
     boolean fiPartida = false;
+    char torn;
 
     public void principal() {
         System.out.println("Benvingut al joc d'escacs!");
 
         char[][] tauler = new char[8][8];
 
-        ArrayList<Character> moviments = new ArrayList<Character>();
+        ArrayList<String> moviments = new ArrayList<String>();
 
         ArrayList<Character> eliminadesB = new ArrayList<Character>();
         ArrayList<Character> eliminadesN = new ArrayList<Character>();
@@ -43,9 +44,8 @@ public class escacs {
 
     }
 
-    public void prepararPartida(char[][] tauler, ArrayList<Character> moviments) {
-        
-        char torn;
+    public void prepararPartida(char[][] tauler, ArrayList<String> moviments) {
+
 
         inicialitzarTauler(tauler);
 
@@ -67,7 +67,6 @@ public class escacs {
     posarNegres(tauler);
 }
 
-    
     public void posarBlanques(char[][] tauler) {
 
 
@@ -102,14 +101,26 @@ public class escacs {
 
     }
 
-    public void netejarMoviments(char[][] tauler, ArrayList<Character> moviments) {
+    public void netejarMoviments(char[][] tauler, ArrayList<String> moviments) {
         moviments.clear();
     }
 
-    public void jugar(char[][] tauler, ArrayList<Character> moviments) {
+    public void jugar(char[][] tauler, ArrayList<String> moviments) {
         
-    
-    mostrarTauler(tauler);
+        while (!fiPartida) {
+        mostrarTauler(tauler);
+        mostrarTorn();
+        String mov = llegirMoviment();
+
+        if (mov.equalsIgnoreCase("Abandonar")) {
+            fiPartida = true;
+        }
+        else if (validarMoviment(mov, tauler)) {
+            moviments.add(mov);
+            canviarTorn();
+        }
+        
+    }
         
     }
     
@@ -130,6 +141,81 @@ public class escacs {
             }
             System.out.println();
         }
-    }  
+    } 
 
+    public void mostrarTorn() {
+        
+        if (torn == 'B' ) { 
+            System.out.println("Torn de les peces blanques");
+        }
+        else {
+            System.out.println("Torn de les peces negres");
+        }
+    }
+
+    public void canviarTorn() {
+        if (torn == 'B') {
+            torn = 'N';
+        } else {
+            torn = 'B';
+        }
+    }
+    public String llegirMoviment () {
+
+        System.out.println("Introdueix moviment ex: (casella inici) e2  (casella final) e4 o 'Abandonar' si vols rendir-te :");
+        return sc.nextLine();
+    }
+
+    public boolean validarMoviment(String mov, char[][] tauler) {
+
+    if (!formatCorrecte(mov)) {
+        System.out.println("Format incorrecte");
+        return false;
+    }
+
+    String[] parts = separarMoviment(mov);
+
+    int[] origen = convertirCoordenada(parts[0]);
+    int[] desti = convertirCoordenada(parts[1]);
+
+    if (!hiHaPeca(origen, tauler)) {
+        System.out.println("No hi ha cap peça a l'origen");
+        return false;
+    }
+
+    if (!pecaDelTorn(origen, tauler)) {
+        System.out.println("Aquesta peça no és del teu torn");
+        return false;
+    }
+
+    return true;
+    }
+
+    public boolean formatCorrecte(String mov) {
+        return mov.matches("[a-h][1-8] [a-h][1-8]");
+    }
+
+    public String[] separarMoviment(String mov) {
+        return mov.split(" ");
+    }
+
+    public int[] convertirCoordenada(String coord) {
+        int col = coord.charAt(0) - 'a';
+        int fila = coord.charAt(1) - '1';
+        return new int[]{fila, col};
+    }
+
+    public boolean hiHaPeca(int[] pos, char[][] tauler) {
+        return tauler[pos[0]][pos[1]] != ' ';
+    }
+
+    public boolean pecaDelTorn(int[] pos, char[][] tauler) {
+        char p = tauler[pos[0]][pos[1]];
+
+        if (torn == 'B') {
+            return Character.isUpperCase(p);
+        } else {
+            return Character.isLowerCase(p);
+        }
+    }
 }
