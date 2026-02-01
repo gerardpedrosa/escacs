@@ -226,6 +226,22 @@ public class escacs {
             }
         }
 
+        // Reina
+        if (peca == 'Q' || peca == 'q') {
+            if (!movimentReina(origen, desti, tauler)) {
+                System.out.println("Moviment de reina no vàlid");
+                return false;
+            }
+        }
+
+        // Rei
+        if (peca == 'K' || peca == 'k') {
+            if (!movimentRei(origen, desti, tauler)) {
+                System.out.println("Moviment de rei no vàlid");
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -394,5 +410,28 @@ public class escacs {
 
         return true;
     }
+
+    public boolean movimentReina(int[] o, int[] d, char[][] tauler) {
+        // La reina utilitza els moviments de la torre i l'alfil
+        return movimentTorre(o, d, tauler) || movimentAlfil(o, d, tauler);
+    }
+
+    public boolean movimentRei(int[] o, int[] d, char[][] tauler) {
+    
+        char peca = tauler[o[0]][o[1]];
         
+        int df = Math.abs(d[0] - o[0]);
+        int dc = Math.abs(d[1] - o[1]);
+
+        // El rei es pot moure solament una casella en qualsevol direcció
+        if (df <= 1 && dc <= 1) {
+            
+            char destiPeca = tauler[d[0]][d[1]];
+            if (destiPeca == ' ') return true;
+            
+            if (Character.isUpperCase(peca) != Character.isUpperCase(destiPeca)) return true; // captura
+        }
+        return false;
+    }
+       
 }
