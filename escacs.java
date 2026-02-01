@@ -218,6 +218,13 @@ public class escacs {
             }
         }
 
+        // Cavall
+        if (peca == 'C' || peca == 'c') {
+            if (!movimentCavall(origen, desti, tauler)) {
+                System.out.println("Moviment de cavall no vàlid");
+                return false;
+            }
+        }
 
         return true;
     }
@@ -365,6 +372,27 @@ public class escacs {
 
         // Validació color peça destí
         return Character.isUpperCase(origen) != Character.isUpperCase(desti);
+    }
+
+    public boolean movimentCavall(int[] o, int[] d, char[][] tauler) {
+
+        int df = Math.abs(d[0] - o[0]);
+        int dc = Math.abs(d[1] - o[1]);
+
+        // Movimient L
+        if (!((df == 2 && dc == 1) || (df == 1 && dc == 2))) {
+            return false;
+        }
+
+        char origen = tauler[o[0]][o[1]];
+        char desti  = tauler[d[0]][d[1]];
+
+        // Validació color peça destí
+        if (desti != ' ' && Character.isUpperCase(origen) == Character.isUpperCase(desti)) {
+            return false;
+        }
+
+        return true;
     }
         
 }
