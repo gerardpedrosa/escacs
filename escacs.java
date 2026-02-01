@@ -108,20 +108,24 @@ public class escacs {
     public void jugar(char[][] tauler, ArrayList<String> moviments) {
         
         while (!fiPartida) {
-        mostrarTauler(tauler);
-        mostrarTorn();
-        String mov = llegirMoviment();
+            mostrarTauler(tauler);
+            mostrarTorn();
+            String mov = llegirMoviment();
 
-        if (mov.equalsIgnoreCase("Abandonar")) {
-            fiPartida = true;
+            if (mov.equalsIgnoreCase("Abandonar")) {
+                fiPartida = true;
+            }
+            else if (validarMoviment(mov, tauler)) {
+
+                String[] parts = separarMoviment(mov);
+                int[] origen = convertirCoordenada(parts[0]);
+                int[] desti = convertirCoordenada(parts[1]);
+
+                aplicarMoviment(origen, desti, tauler);
+                moviments.add(mov);
+                canviarTorn();
+            }
         }
-        else if (validarMoviment(mov, tauler)) {
-            moviments.add(mov);
-            canviarTorn();
-        }
-        
-    }
-        
     }
     
     public void mostrarTauler(char[][] tauler) {
@@ -132,11 +136,11 @@ public class escacs {
             System.out.print((f + 1) + " | ");
 
             for (int c = 0; c < 8; c++) {
-                char peça = tauler[f][c];
-                if (peça == ' ') {
+                char peca = tauler[f][c];
+                if (peca == ' ') {
                     System.out.print(". ");
                 } else {
-                    System.out.print(peça + " ");
+                    System.out.print(peca + " ");
                 }
             }
             System.out.println();
@@ -188,7 +192,21 @@ public class escacs {
         return false;
     }
 
+    char peca = tauler[origen[0]][origen[1]];
+
+    if (peca == 'P' || peca == 'p') {
+        if (!movimentPeo(origen, desti, tauler)) {
+            System.out.println("Moviment de peó no vàlid");
+            return false;
+        }
+    }
     return true;
+    }
+
+    public void aplicarMoviment(int[] o, int[] d, char[][] tauler) {
+
+        tauler[d[0]][d[1]] = tauler[o[0]][o[1]];
+        tauler[o[0]][o[1]] = ' ';
     }
 
     public boolean formatCorrecte(String mov) {
@@ -218,4 +236,45 @@ public class escacs {
             return Character.isLowerCase(p);
         }
     }
+
+    public boolean movimentPeo(int[] o, int[] d, char[][] tauler) {
+
+    char peca = tauler[o[0]][o[1]];
+
+    int dir;
+    int filaInicial;
+
+    if (Character.isUpperCase(peca)) { // Blanques
+        dir = 1;
+        filaInicial = 1;
+    } else { // Negres
+        dir = -1;
+        filaInicial = 6;
+    }
+
+    // Avança 1 casella
+    if (d[1] == o[1] &&
+        d[0] == o[0] + dir &&
+        tauler[d[0]][d[1]] == ' ') {
+        return true;
+    }
+    // Avança 2 casellas solament desde posicio inicial
+    if (d[1] == o[1] &&
+        o[0] == filaInicial &&
+        d[0] == o[0] + 2 * dir &&
+        tauler[o[0] + dir][o[1]] == ' ' &&
+        tauler[d[0]][d[1]] == ' ') {
+        return true;
+    }
+
+    // Diagonal solament si mata
+    if (Math.abs(d[1] - o[1]) == 1 &&
+        d[0] == o[0] + dir &&
+        tauler[d[0]][d[1]] != ' ' &&
+        Character.isUpperCase(tauler[d[0]][d[1]]) != Character.isUpperCase(peca)) {
+        return true;
+    }
+
+    return false;
+}
 }
