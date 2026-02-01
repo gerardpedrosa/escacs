@@ -15,17 +15,33 @@ public class escacs {
     public void principal() {
         System.out.println("Benvingut al joc d'escacs!");
 
-        char[][] tauler = new char[8][8];
-
-        ArrayList<String> moviments = new ArrayList<String>();
-
-        ArrayList<Character> eliminadesB = new ArrayList<Character>();
-        ArrayList<Character> eliminadesN = new ArrayList<Character>();
-
         demanarJugadors();
-        prepararPartida(tauler, moviments);
-        jugar(tauler, moviments);
+
+        boolean seguirJugant = true;
+
+        while (seguirJugant) {
+            char[][] tauler = new char[8][8];
+            ArrayList<String> moviments = new ArrayList<String>();
+            ArrayList<Character> eliminadesB = new ArrayList<Character>();
+            ArrayList<Character> eliminadesN = new ArrayList<Character>();
+
+            fiPartida = false;  // <-- reiniciamos aquí
+            prepararPartida(tauler, moviments);
+            jugar(tauler, moviments, eliminadesB, eliminadesN);
+
+            mostrarResum(moviments);
+
+            seguirJugant = novaPartida();
+        }
+
+        System.out.println("Gràcies per jugar! Fins aviat.");
     }
+
+    public String demanarNom(String color) {
+        System.out.println("Introdueix el nom del jugador " + color + ": ");
+        return sc.nextLine();
+    }
+
 
     public void demanarJugadors() {
 
@@ -105,10 +121,11 @@ public class escacs {
         moviments.clear();
     }
 
-    public void jugar(char[][] tauler, ArrayList<String> moviments) {
+    public void jugar(char[][] tauler, ArrayList<String> moviments, ArrayList<Character> eliminadesB, ArrayList<Character> eliminadesN) {
         
         while (!fiPartida) {
             mostrarTauler(tauler);
+            mostrarCapturades(eliminadesB, eliminadesN);
             mostrarTorn();
             String mov = llegirMoviment();
 
@@ -121,7 +138,7 @@ public class escacs {
                 int[] origen = convertirCoordenada(parts[0]);
                 int[] desti = convertirCoordenada(parts[1]);
 
-                aplicarMoviment(origen, desti, tauler);
+                aplicarMoviment(origen, desti, tauler, eliminadesB, eliminadesN);
                 moviments.add(mov);
                 canviarTorn();
             }
@@ -245,7 +262,16 @@ public class escacs {
         return true;
     }
 
-    public void aplicarMoviment(int[] o, int[] d, char[][] tauler) {
+    public void aplicarMoviment(int[] o, int[] d, char[][] tauler, ArrayList<Character> eliminadesB, ArrayList<Character> eliminadesN) {
+
+        char destiPeca = tauler[d[0]][d[1]];
+        if (destiPeca != ' ') {
+            if (Character.isUpperCase(destiPeca)) {
+                eliminadesB.add(destiPeca);
+            } else {
+                eliminadesN.add(destiPeca);
+            }
+        }
 
         tauler[d[0]][d[1]] = tauler[o[0]][o[1]];
         tauler[o[0]][o[1]] = ' ';
@@ -432,6 +458,42 @@ public class escacs {
             if (Character.isUpperCase(peca) != Character.isUpperCase(destiPeca)) return true; // captura
         }
         return false;
+    }
+
+    public boolean novaPartida() {
+        System.out.println("Vols començar una nova partida? (Sí/No): ");
+        String resposta = sc.nextLine().trim().toLowerCase();
+
+        if (resposta.equals("si") || resposta.equals("sí")) {
+            return true;
+        } else {
+            System.out.println("Gràcies per jugar! Fins aviat.");
+            return false;
+        }
+    }
+
+    public void mostrarResum(ArrayList<String> moviments) {
+        System.out.println("\nMoviments de la partida:");
+        for (int i = 0; i < moviments.size(); i++) {
+            System.out.println(moviments.get(i));
+        }
+    }
+
+    public void mostrarCapturades(ArrayList<Character> eliminadesB, ArrayList<Character> eliminadesN) {
+        
+        System.out.print("Capturades blanques: ");
+        
+        for (int i = 0; i < eliminadesB.size(); i++) {
+            System.out.print(eliminadesB.get(i) + " ");
+        }
+        System.out.println();
+
+        System.out.print("Capturades negres: ");
+        
+        for (int i = 0; i < eliminadesN.size(); i++) {
+            System.out.print(eliminadesN.get(i) + " ");
+        }
+        System.out.println();
     }
        
 }
