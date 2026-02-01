@@ -201,6 +201,7 @@ public class escacs {
                 return false;
             }
         }
+
         // Torre
         if (peca == 'T' || peca == 't') {
             if (!movimentTorre(origen, desti, tauler)) {
@@ -209,7 +210,15 @@ public class escacs {
             }
         }
 
-        
+        // Alfil
+        if (peca == 'A' || peca == 'a') {
+            if (!movimentAlfil(origen, desti, tauler)) {
+                System.out.println("Moviment d'alfil no vàlid");
+                return false;
+            }
+        }
+
+
         return true;
     }
 
@@ -322,6 +331,40 @@ public class escacs {
         // Validació color peça destí
         return Character.isUpperCase(origen) != Character.isUpperCase(desti);
         
+    }
+
+    public boolean movimentAlfil(int[] o, int[] d, char[][] tauler) {
+
+        // Es mou en diagonal
+        if (Math.abs(d[0] - o[0]) != Math.abs(d[1] - o[1])) {
+            return false;
+        }
+
+        int pasFila = Integer.compare(d[0], o[0]); // -1 o 1
+        int pasCol  = Integer.compare(d[1], o[1]); // -1 o 1
+
+        int filaActual = o[0] + pasFila;
+        int colActual = o[1] + pasCol;
+
+        // No hi han obstacles
+        while (filaActual != d[0] && colActual != d[1]) {
+            if (tauler[filaActual][colActual] != ' ') {
+                return false;
+            }
+            filaActual += pasFila;
+            colActual += pasCol;
+        }
+
+        // Mira si mata a una peça o no
+        char origen = tauler[o[0]][o[1]];
+        char desti  = tauler[d[0]][d[1]];
+
+        if (desti == ' ') {
+            return true;
+        }
+
+        // Validació color peça destí
+        return Character.isUpperCase(origen) != Character.isUpperCase(desti);
     }
         
 }
